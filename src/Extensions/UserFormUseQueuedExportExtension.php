@@ -15,15 +15,17 @@ class UserFormUseQueuedExportExtension extends DataExtension
     public function updateCMSFields(FieldList $fields)
     {
         $gridField = $fields->fieldByName('Root.Submissions.Submissions');
+        if ($gridField)
+        {
+            $config = $gridField->getConfig();
+            $oldExportButton = $config->getComponentByType(GridFieldExportButton::class);
+            $config->addComponent($newExportButton = new GridFieldQueuedExportButton('buttons-after-left'));
 
-        $config = $gridField->getConfig();
-        $oldExportButton = $config->getComponentByType(GridFieldExportButton::class);
-        $config->addComponent($newExportButton = new GridFieldQueuedExportButton('buttons-after-left'));
+            // Set Header and Export columns on new Export Button
+            $newExportButton->setCsvHasHeader($oldExportButton->getCsvHasHeader());
+            $newExportButton->setExportColumns($oldExportButton->getExportColumns());
 
-        // Set Header and Export columns on new Export Button
-        $newExportButton->setCsvHasHeader($oldExportButton->getCsvHasHeader());
-        $newExportButton->setExportColumns($oldExportButton->getExportColumns());
-
-        $config->removeComponentsByType(GridFieldExportButton::class);
+            $config->removeComponentsByType(GridFieldExportButton::class);
+        }
     }
 }
